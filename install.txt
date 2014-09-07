@@ -1,0 +1,22 @@
+1. make sure all iSCSI portals are configured correctly.
+2. copy xtremio.py to cinder/volume/drivers/emc. on a RDO the full install the
+   path is:
+/usr/lib/python2.6/site-packages/cinder/volume/drivers/emc/xtremio.py
+3. edit cinder.conf and add the configuration below.
+   usually the full path is: /etc/cinder/cinder.conf
+  a. for iSCSI use:
+ volume_driver=cinder.volume.drivers.emc.xtremio.XtremIOISCSIDriver
+  b. for FibreChannel use:
+ volume_driver=cinder.volume.drivers.emc.xtremio.XtremIOFibreChannelDriver
+ san_ip=[xms ip address or host name]
+ san_login=[xms username with configure privileges]
+ san_password=[xms password]
+4. restart cinder:
+  openstack-service restart cinder-volume
+5. Optional on iSCSI: set Cluster authentication mode to initiator
+
+Note on FibreChannel:
+Some Linux hosts has a bug in the FC driver that prevents volumes mapped to 
+lun 0 from being exposed by the driver as a device. this might show as an 
+error in the OpenStack.
+As a work around create a dummy volume per initiator and map it to lun 0. 
