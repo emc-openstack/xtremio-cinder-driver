@@ -690,13 +690,6 @@ class XtremIOVolumeDriver(san.SanDriver):
     def clone_image(self, context, volume, image_location,
                     image_meta, image_service):
 
-        # Is the image owned by this tenant or public?
-        if ((not image_meta.get('is_public', False)) and
-                (image_meta['owner'] != volume['project_id'])):
-            LOG.warning(_LW("Requested image is not "
-                            "accessible by current Tenant."))
-            return None, False
-
         image_name = u'IMG-%s' % image_meta['id']
         try:
             cached_vol = self.client.req('volumes',
