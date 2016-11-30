@@ -34,10 +34,10 @@ supported XtremIO version 2.4 and up
 import datetime
 import json
 import math
+import pytz
 import random
 import requests
 import string
-import pytz
 
 from oslo_config import cfg
 from oslo_log import log as logging
@@ -73,7 +73,7 @@ XTREMIO_OPTS = [
                      'certificate of the backend endpoint.'),
     cfg.BoolOpt('cache_images',
                 default=False,
-                help='Use snapshot to cache the image when copied to a volume'),
+                help='Use snapshot to cache the image  on first copy'),
     cfg.IntOpt('xtremio_volumes_per_glance_cache',
                default=100,
                help='Number of volumes created from each cached glance image')
@@ -384,7 +384,8 @@ class XtremIOVolumeDriver(san.SanDriver):
         self.provisioning_factor = (self.configuration.
                                     safe_get('max_over_subscription_ratio')
                                     or DEFAULT_PROVISIONING_FACTOR)
-        self.cache_images = self.configuration.safe_get('cache_images') or False
+        self.cache_images = (self.configuration.safe_get('cache_images') or
+                             False)
         self._stats = {}
         self.client = XtremIOClient3(self.configuration, self.cluster_id)
 
