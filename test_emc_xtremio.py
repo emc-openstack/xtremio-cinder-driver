@@ -22,9 +22,6 @@ from cinder.tests.unit import fake_snapshot
 from cinder.tests.unit import fake_volume
 from cinder.volume.drivers.emc import xtremio
 
-from oslo_log import log as logging
-LOG = logging.getLogger(__name__)
-
 
 typ2id = {'volumes': 'vol-id',
           'snapshots': 'vol-id',
@@ -85,9 +82,8 @@ xms_filters = {
     'le': lambda x, y: x <= y,
 }
 
-def get_xms_obj_by_name(typ, name):
-    LOG.info('XMS_DATA: %s', xms_data[typ])
 
+def get_xms_obj_by_name(typ, name):
     for item in xms_data[typ].values():
         if 'name' in item and item['name'] == name:
             return item
@@ -150,8 +146,6 @@ def xms_request(object_type='volumes', request_typ='GET', data=None,
             return get_obj(object_type, name, idx)
         else:
             if data and data.get('full') == 1:
-                LOG.info('DATA :%s: %s', request_typ, res)
-
                 filter_term = data.get('filter')
                 if not filter_term:
                     entities = list(res.values())
@@ -588,10 +582,6 @@ class EMCXIODriverFibreChannelTestCase(test.TestCase):
     def setUp(self):
         super(EMCXIODriverFibreChannelTestCase, self).setUp()
         clean_xms_data()
-
-
-
-
 
         self.config = mock.Mock(san_login='',
                                 san_password='',

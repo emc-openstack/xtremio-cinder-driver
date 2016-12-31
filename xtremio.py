@@ -579,6 +579,7 @@ class XtremIOVolumeDriver(san.SanDriver):
             lm_name = '%s_%s_%s' % (six.text_type(vol['index']),
                                     six.text_type(ig_idx),
                                     six.text_type(tg['index']))
+
             LOG.debug('Removing lun map %s.', lm_name)
             try:
                 self.client.req('lun-maps', 'DELETE', name=lm_name)
@@ -613,7 +614,10 @@ class XtremIOVolumeDriver(san.SanDriver):
         ig_indexes = set()
 
         for initiator_name in initiator_names:
+            LOG.info(_LI('Initiator:\n%s'), initiator_name)
+
             initiator = self.client.get_initiator(initiator_name)
+            LOG.info(_LI('Initiator2:\n%s'), initiator)
 
             ig_indexes.add(initiator['ig-id'][XTREMIO_OID_INDEX])
 
@@ -837,6 +841,7 @@ class XtremIOISCSIDriver(XtremIOVolumeDriver, driver.ISCSIDriver):
                           'disabled')
         initiator_name = self._get_initiator_names(connector)[0]
         initiator = self.client.get_initiator(initiator_name)
+
         if initiator:
             login_passwd = initiator['chap-authentication-initiator-password']
             discovery_passwd = initiator['chap-discovery-initiator-password']
@@ -849,6 +854,7 @@ class XtremIOISCSIDriver(XtremIOVolumeDriver, driver.ISCSIDriver):
              discovery_passwd) = self._create_initiator(connector,
                                                         login_chap,
                                                         discovery_chap)
+
         # if CHAP was enabled after the initiator was created
         if login_chap and not login_passwd:
             LOG.info(_LI('initiator has no password while using chap,'
@@ -985,6 +991,8 @@ class XtremIOFibreChannelDriver(XtremIOVolumeDriver,
                 data = {'initiator-name': wwpn, 'ig-id': ig_name,
                         'port-address': wwpn}
                 self.client.req('initiators', 'POST', data)
+                LOG.info(_LI("create initiator %s\n"), data)
+
         igs = list(set([i['ig-id'][XTREMIO_OID_NAME] for i in found]))
         if new and ig['ig-id'][XTREMIO_OID_NAME] not in igs:
             igs.append(ig['ig-id'][XTREMIO_OID_NAME])
