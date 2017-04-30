@@ -29,6 +29,7 @@ supported XtremIO version 2.4 and up
 1.0.7K.2 - fix multi cluster bug
 1.0.7K.3 - add option to limit number of volumes created from cached image and
            bug fixes
+1.0.7K4 - fix remap lun issue
 """
 
 import datetime
@@ -874,7 +875,7 @@ class XtremIOISCSIDriver(XtremIOVolumeDriver, driver.ISCSIDriver):
             self.client.req('initiators', 'PUT', data, idx=initiator['index'])
 
         # lun mappping
-        lunmap = self.create_lun_map(volume, ig['ig-id'][2])
+        lunmap = self.create_lun_map(volume, ig['ig-id'][XTREMIO_OID_NAME])
 
         properties = self._get_iscsi_properties(lunmap)
 
