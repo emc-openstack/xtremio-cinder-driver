@@ -30,6 +30,7 @@ supported XtremIO version 2.4 and up
 1.0.7K.3 - add option to limit number of volumes created from cached image and
            bug fixes
 1.0.7K4 - fix remap lun issue
+1.0.7K5 - fix parameter name type
 """
 
 import datetime
@@ -68,7 +69,7 @@ XTREMIO_OPTS = [
     cfg.IntOpt('xtremio_array_busy_retry_interval',
                default=5,
                help='Interval between retries in case array is busy'),
-    cfg.BoolOpt('drivesr_ssl_cert_verify',
+    cfg.BoolOpt('driver_ssl_cert_verify',
                 default=False,
                 help='If set to True the http client will validate the SSL '
                      'certificate of the backend endpoint.'),
