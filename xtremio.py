@@ -31,6 +31,7 @@ supported XtremIO version 2.4 and up
            bug fixes
 1.0.7K4 - fix remap lun issue
 1.0.7K5 - fix parameter name type
+1.0.7K6 - fix volume creation time calculation
 """
 
 import datetime
@@ -743,13 +744,15 @@ class XtremIOVolumeDriver(san.SanDriver):
             return None, False
 
         image_name = u'IMG-%s' % image_meta['id']
+        vol_props = ['timestamp', 'num-of-dest-snaps', 'vol-size']
+        epoch = datetime.datetime(1970, 1, 1, 0, 0, tzinfo=pytz.UTC)
         try:
             cached_vol = self.client.req('volumes',
-                                         name=image_name)['content']
-            cache_create = (datetime.datetime.
-                            strptime(cached_vol['creation-time'],
-                                     "%Y-%m-%d %H:%M:%S").
-                            replace(tzinfo=pytz.UTC))
+                                         name=image_name,
+                                         data={'prop': vol_props})['content']
+            cache_create = (epoch +
+                            datetime.timedelta(milliseconds=
+                                               int(cached_vol['timestamp'])))
         except exception.NotFound:
             cached_vol = None
         if cached_vol and (cache_create < image_meta['updated_at']):
